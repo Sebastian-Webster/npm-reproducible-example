@@ -22,5 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install latest npm
+        run: npm install -g npm@latest
       - name: Run npm ${{ matrix.command }}
         run: npm ${{ matrix.command }}
