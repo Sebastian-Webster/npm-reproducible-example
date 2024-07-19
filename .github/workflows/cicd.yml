@@ -1,0 +1,31 @@
+name: Reproducible Example
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos-12, macos-13, macos-14, ubuntu-20.04, ubuntu-22.04 ]
+        node-version: [18.x, 19.x, 20.x, 21.x, 22.4.0, 22.4.1, 22.5.0]
+        command: [install, ci]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Run npm ${{ matrix.command }}
+        run: npm ${{ matrix.command }} > test.txt
+      - run: cat test.txt
+      - run: cat test.txt | wc -c
+      - run: npm -v
+      - name: Fail workflow if npm failed
+        run: cat test.txt | wc -c | grep -w "0" && exit 1 || echo 'Success'
